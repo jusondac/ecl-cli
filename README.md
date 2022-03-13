@@ -10,4 +10,8 @@ use ```bundle``` to update requirement.
 
 # run
 
-to run this script, use ```ruby ./eclCli.rb```
+to run this script, use 
+```
+cd ecl-cli
+ruby ./eclCli.rb
+```
