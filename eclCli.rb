@@ -76,11 +76,34 @@ class Attempt
 	end
 
 	def do_your_job
-		byebug
+		course_listed = self.course_lists.map{|k,v| v[0][/[\s][A-Za-z]+\s\w+.\w+/]}
+		choice = selection(course_listed)
+		link = ''
+		self.course_lists.each do |k, v|
+			v[0].include?(choice) ? link = k : ''
+		end
+		puts "Sepertinya sudah absen, semoga harimu menyenangkan!"
+		links = self.mechanize.get link
+		link_meet = links.links.map{|x| x.uri.to_s[/\w+.+course\/section\/\d+/]}.compact
+		link_title = links.links.map{|x| x.to_s.strip[/Pertemuan.\d+/]}.compact
+		get = {}
+		link_title.each_with_index {|x,i| get[x] = link_meet[i] }
+		choice = selection(get.map{|k,v| k}.to_a)
+		puts get[choice]
+		if get[choice].nil?
+			puts "Sepertinya belum ada absen untuk Pertemuan kali ini"
+		else
+			byebug
+		end
+		puts "still running"
+		exit!
+	end
+
+	def selection(arr)
+		choice = self.prompt.select("choice course to attent", arr)
+		choice.strip
 	end
 end
-
-
 
 attempt = Attempt.new(mechanize:Mechanize.new, prompt: TTY::Prompt.new)
 attempt.connect
